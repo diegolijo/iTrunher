@@ -1,20 +1,18 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>home</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [hidden]="true">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div style="display: flex; justify-content: space-evenly">
+<!--     <ion-button (click)="getLatLangs()">select</ion-button>
+    <ion-button (click)="this.insertLatLang(null)">insert</ion-button>
+    <ion-button (click)="deleteLatLangs()">delete</ion-button> -->
   </div>
 </ion-content>
+
+
+<div  id="map" #map class="mapa">
+</div>
