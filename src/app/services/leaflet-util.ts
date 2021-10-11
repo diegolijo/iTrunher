@@ -13,6 +13,7 @@ import { LocationManager } from './location-manager';
 @Injectable()
 export class LeafletUtil {
 
+  public readonly vaterIcon = '/assets/img/vaterIcon.png';
   public readonly sucessIcon = '/assets/img/markerIconSuccess.png';
   public readonly warningIcon = '/assets/img/markerIconWarning.png';
   public readonly dangerIcon = '/assets/img/markerIconDanger.png';
@@ -153,7 +154,7 @@ export class LeafletUtil {
 
   /****************************** MARKERS ******************************/
 
-  public crateLocationMarker(latlng: any, sIcon: string, funcion: any, options?: any): marker {
+  public crateLocationMarker(latlng: any, sIcon: string, onClickFuncion: any, options?: any): marker {
     const opt = {
       icon: icon({
         iconUrl: sIcon,
@@ -165,10 +166,9 @@ export class LeafletUtil {
         popupAnchor: options ? options.popupAnchor : [0, 0] // point from which  popup should open relat to the iconAnch
       })
     };
-    const latLang = latLng(latlng.lat, latlng.lng);
-    const markr: marker = marker(latLang, opt);
+    const markr: marker = marker(latLng(latlng.lat, latlng.lng), opt);
     markr.on('click', (e) => {
-      funcion(e);
+      onClickFuncion(e);
     });
     return markr;
   }
@@ -180,10 +180,9 @@ export class LeafletUtil {
     return group;
   }
 
-
-
-
-
+  public addMarkerToMap(map: Map, marker: marker) {
+    marker.addTo(map);
+  }
 
 
 

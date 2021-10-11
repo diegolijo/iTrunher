@@ -14,7 +14,7 @@ export class Api {
 
 
 
-  public getLatLangs(): Promise<any> {
+  public getLatLangs(): Promise<ApiLatLangs[]> {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const headers = {
@@ -33,7 +33,7 @@ export class Api {
     });
   }
 
-  public insertLatLangs(items: any[]) {
+  public insertLatLangs(items: ApiLatLangs[]) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const headers = {
@@ -77,4 +77,5 @@ export interface ApiLatLangs {
   lng: string;
   descripcion: string;
   name: string;
+  locality: string;
 }
