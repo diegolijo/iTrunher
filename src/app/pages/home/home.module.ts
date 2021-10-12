@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { NewVaterPageRoutingModule } from '../new-vater/new-vater-routing.module';
+import { ValoracionesPageRoutingModule } from '../valoraciones/valoraciones-routing.module';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { NewVaterPageRoutingModule } from '../new-vater/new-vater-routing.module
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    NewVaterPageRoutingModule
+    NewVaterPageRoutingModule,
+    ValoracionesPageRoutingModule
   ],
   declarations: [HomePage]
 })

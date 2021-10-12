@@ -26,6 +26,9 @@ export class LeafletUtil {
   public readonly terrenoLayer = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   /* topo */
   public readonly topoLayer = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+ // public readonly standarLayer = '';
+
+
 
 
   //  subscribe

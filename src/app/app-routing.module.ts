@@ -14,11 +14,10 @@ const routes: Routes = [
   {
     path: 'new-vater',
     loadChildren: () => import('./pages/new-vater/new-vater.module').then( m => m.NewVaterPageModule)
-  }
-  ,
+  },
   {
-    path: 'new-vater',
-    loadChildren: () => import('./pages/fotos-modal/fotos-modal.module').then( m => m.FotosModalPageModule)
+    path: 'valoraciones',
+    loadChildren: () => import('./pages/valoraciones/valoraciones.module').then( m => m.ValoracionesPageModule)
   },
 ];
 

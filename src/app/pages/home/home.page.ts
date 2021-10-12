@@ -9,6 +9,7 @@ import { LeafletUtil } from '../../services/leaflet-util';
 import { LocationManager } from '../../services/location-manager';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { NewVaterPage } from '../new-vater/new-vater.page';
+import { ValoracionesPage } from '../valoraciones/valoraciones.page';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class HomePage implements OnInit {
   public items: any;
   public selectedLoc: IApiLatLangs;
   public selectedMarker: marker;
+  private isNavigator = false;
 
 
 
@@ -55,6 +57,7 @@ export class HomePage implements OnInit {
     await this.createMarkers();
     this.leafletUtil.addMarkersToMap(this.map, this.markers)
   }
+
 
 
   //********************************** MAPA ***********************************/
@@ -90,10 +93,8 @@ export class HomePage implements OnInit {
   }
 
 
-  /**
-  * abre el navigator con latlng de la delegacion del parte
-  */
-  private launchNavigator(latLang: latLng) {
+  // TODO observable que lance valoracion cuando vuelava del navigator
+  private async launchNavigator(latLang: latLng) {
     const options: AppLauncherOptions = {};
     if (this.platform.is('ios')) {
       options.uri = ''; // TODO uri de la version ios
@@ -101,9 +102,13 @@ export class HomePage implements OnInit {
       options.uri = HomePage.NAVIGATION_PACKAGE + latLang.lat + ',' + latLang.lng + HomePage.WALK_MODE;
       options.packageName = HomePage.MAPS_PACKAGE;
     }
-    this.appLauncher.canLaunch(options)
-      .then(async () => await this.appLauncher.launch(options))
-      .catch((error: any) => this.helper.showException(error));
+    const res = await this.appLauncher.canLaunch(options);
+    if (res) {
+      await this.appLauncher.launch(options);
+      this.isNavigator = true;
+    } else {
+      this.helper.showException('No se puede lanzar el navegador');
+    }
   }
 
 
@@ -186,20 +191,20 @@ export class HomePage implements OnInit {
         component: NewVaterPage
       }
     );
-
-
     await modal.present();
-    const result = await modal.onDidDismiss();
-    const latLng: IApiLatLangs = this.api.emptyApiLatLangs();
-    latLng.foto = result.data.result;
-    latLng.descripcion = '',
-    latLng.lat= '',
-    latLng.lng= '',
-    latLng.locality= '',
-    latLng.name= 'PRUEBA',
-    latLng.puntuacion = 5
-    debugger;
-    this.insertLatLang([latLng]);
+    await modal.onDidDismiss();
+  }
+
+
+  public async launckModalValoracion() {
+    const modal = await this.modalController.create(
+      {
+        component: ValoracionesPage,
+        cssClass: 'contenedor-valoracion'
+      }
+    );
+    await modal.present();
+    await modal.onDidDismiss();
   }
 
 
