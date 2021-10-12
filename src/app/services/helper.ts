@@ -140,7 +140,7 @@ export class Helper {
                 'Tiempo excedido');
             }, 60 * 1000);
           }
-          const opt = msg ? { message: msg } : {};
+          const opt = msg ? { message: msg, translucent: true, cssClass: 'loader-class' } : {};
           const appLoader = await this.loadingCtrl.create(options || opt);
           await appLoader.present();
           resolve(true);

@@ -3,8 +3,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/dot-notation */
 import { Injectable } from '@angular/core';
-import { icon, latLng, latLngBounds, Map, marker, tileLayer, popup, point, DomEvent, DomUtil, featureGroup } from 'leaflet';
+import { DomEvent, DomUtil, featureGroup, icon, latLng, latLngBounds, Map, marker, point, popup, tileLayer } from 'leaflet';
 import { Subject } from 'rxjs';
+import { IApiLatLangs } from './api';
 import { Helper } from './helper';
 import { LocationManager } from './location-manager';
 
@@ -14,6 +15,7 @@ import { LocationManager } from './location-manager';
 export class LeafletUtil {
 
   public readonly vaterIcon = '/assets/img/vaterIcon.png';
+  public readonly vaterIconSelect = '/assets/img/vaterIconSelect.png';
   public readonly sucessIcon = '/assets/img/markerIconSuccess.png';
   public readonly warningIcon = '/assets/img/markerIconWarning.png';
   public readonly dangerIcon = '/assets/img/markerIconDanger.png';
@@ -154,7 +156,7 @@ export class LeafletUtil {
 
   /****************************** MARKERS ******************************/
 
-  public crateLocationMarker(latlng: any, sIcon: string, onClickFuncion: any, options?: any): marker {
+  public crateLocationMarker(latlng: any, sIcon: string, onClickFuncion: any, embebedObject: any, options?: any): marker {
     const opt = {
       icon: icon({
         iconUrl: sIcon,
@@ -167,6 +169,7 @@ export class LeafletUtil {
       })
     };
     const markr: marker = marker(latLng(latlng.lat, latlng.lng), opt);
+    markr['embebedObject'] = embebedObject;
     markr.on('click', (e) => {
       onClickFuncion(e);
     });
@@ -186,6 +189,24 @@ export class LeafletUtil {
 
 
 
+  public setSelectedMarker(marker: marker) {
+    marker.setIcon(icon({
+      iconUrl: this.vaterIconSelect,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    }));
+  }
+
+  public clearSelectedMarker(selected: marker) {
+    if (selected) {
+      selected.setIcon(icon({
+        iconUrl: this.vaterIcon,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      }));
+    }
+  }
+
   // **************************************** DEVICE POSITION ***********************************
 
   public async initWatchPosition(map: Map) {
@@ -193,6 +214,7 @@ export class LeafletUtil {
       map.getCenter(),
       this.deviceIcon,
       () => { this.flyToDevicePosition(map); },
+      null,
       { iconSize: [16, 16], iconAnchor: [8, 8] });
     this.devicePosition.addTo(map);
 

@@ -20,8 +20,10 @@
     "@angular/platform-browser": "~12.1.1",
     "@angular/platform-browser-dynamic": "~12.1.1",
     "@angular/router": "~12.1.1",
+    "@ionic-native/app-launcher": "^5.36.0",
     "@ionic-native/core": "^5.36.0",
     "@ionic-native/geolocation": "^5.36.0",
+    "@ionic-native/google-plus": "^5.36.0",
     "@ionic-native/native-geocoder": "^5.36.0",
     "@ionic/angular": "^5.5.2",
     "cordova-android": "9.1.0",
@@ -47,8 +49,10 @@
     "@typescript-eslint/eslint-plugin": "4.16.1",
     "@typescript-eslint/parser": "4.16.1",
     "cordova-plugin-add-swift-support": "^2.0.2",
+    "cordova-plugin-app-launcher": "^0.4.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-geolocation": "^4.1.0",
+    "cordova-plugin-googleplus": "^8.5.2",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-nativegeocoder": "^3.4.1",
@@ -83,7 +87,11 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-nativegeocoder": {}
+      "cordova-plugin-nativegeocoder": {},
+      "cordova-plugin-app-launcher": {},
+      "cordova-plugin-googleplus": {
+        "PLAY_SERVICES_VERSION": "15.0.1"
+      }
     },
     "platforms": [
       "android"

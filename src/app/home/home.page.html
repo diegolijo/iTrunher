@@ -1,19 +1,32 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>home</ion-title>
+<ion-header style="position: absolute;top: 2em;z-index: 1000000;width: 100%;display: flex;justify-content: center;">
+  <ion-toolbar style="width: 90%;border-radius: 2em;">
+    <ion-title>iTruñer</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [hidden]="true">
-
-
-</ion-content>
-
-
-<div  id="map" #map class="mapa">
+<div id="map" #map class="mapa">
 </div>
 
-<!-- <div style="display: flex; justify-content: space-evenly; position: absolute; bottom: 0px; z-index: 1000000; width: 100%;">
+<!-- <div
+  style="display: flex; justify-content: space-evenly; position: absolute; bottom: 5em; z-index: 1000000; width: 100%;">
   <ion-button (click)="getLatLangs()">select</ion-button>
-   <ion-button (click)="deleteLatLangs()">delete</ion-button>
- </div> -->
+  <ion-button (click)="deleteLatLangs()">delete</ion-button>
+</div> -->
+
+
+<div #info [hidden]="!this.selectedLoc.name" class="contInfo">
+  <div> {{selectedLoc.name }} </div>
+  <div> {{selectedLoc.locality}} </div>
+  <div style=" min-height: 2.3em;"> {{selectedLoc.descripcion}}</div>
+  <div>
+    <ion-icon color="primary" *ngFor="let index of [1,2,3,4,5]" style="margin-right: 0.5em;height: 1.5em;width: 1.5em;"
+      [name]="index <= selectedLoc.puntuacion?  'star': 'star-outline'"
+      (click)="selectedLoc.puntuacion = selectedLoc.puntuacion !== index ? index: index-1">
+    </ion-icon>
+  </div>
+  <div class="contBtn">
+    <ion-button class="btn" (click)="onClickNav({lat: this.selectedLoc.lat,  lng:this.selectedLoc.lng})">puedo llegar!
+    </ion-button>
+    <ion-button class="btn" (click)="onClickValoraciones()">detalles</ion-button>
+  </div>
+</div>

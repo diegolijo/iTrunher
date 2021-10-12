@@ -2,6 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { AppLauncher } from '@ionic-native/app-launcher/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -12,6 +13,7 @@ import { Helper } from './services/helper';
 import { ProHttp } from './services/http-provider';
 import { LeafletUtil } from './services/leaflet-util';
 import { LocationManager } from './services/location-manager';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
 
 
@@ -26,7 +28,9 @@ import { LocationManager } from './services/location-manager';
     LeafletUtil,
     Geolocation,
     Helper,
-    NativeGeocoder
+    NativeGeocoder,
+    AppLauncher,
+    GooglePlus
   ],
   bootstrap: [AppComponent],
 })

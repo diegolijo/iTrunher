@@ -14,7 +14,7 @@ export class Api {
 
 
 
-  public getLatLangs(): Promise<ApiLatLangs[]> {
+  public getLatLangs(): Promise<IApiLatLangs[]> {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const headers = {
@@ -33,7 +33,7 @@ export class Api {
     });
   }
 
-  public insertLatLangs(items: ApiLatLangs[]) {
+  public insertLatLangs(items: IApiLatLangs[]) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const headers = {
@@ -69,13 +69,29 @@ export class Api {
     });
   }
 
+
+  emptyApiLatLangs(): IApiLatLangs {
+    return {
+      id: 0,
+      lat: '',
+      lng: '',
+      descripcion: '',
+      name: '',
+      locality: '',
+      puntuacion: 0
+    }
+  }
+
+
+
 }
 
-export interface ApiLatLangs {
+export interface IApiLatLangs {
   id: number;
   lat: string;
   lng: string;
   descripcion: string;
   name: string;
   locality: string;
+  puntuacion: number
 }

@@ -21,9 +21,9 @@ export class LocationManager {
   public initWatchPosition() {
     if (!this.locationSubscription || this.locationSubscription.closed) {
       const HighAccOpt = {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 1000 * 10,
-        maximunAge: 60 * 60 * 1000
+        maximunAge: 60 * 1000
       };
       this.watchId = navigator.geolocation.watchPosition(
         (resp: any) => {
@@ -45,7 +45,7 @@ export class LocationManager {
 
   public async getCurrentPosition() {
     return new Promise(async (resolve, reject) => {
-      await this.helper.showLoader('buscando posicion...');
+      await this.helper.showLoader('buscando posición...');
       try {
         const HighAccOpt = {
           enableHighAccuracy: true,

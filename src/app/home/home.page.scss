@@ -1,8 +1,32 @@
-
 .mapa {
   top: 0em;
   height: 100%;
   width: 100%;
   z-index: 1000;
   background-color: #193922;
+}
+
+
+.contInfo {
+  position: absolute;
+  width: 100%;
+  z-index: 1000000;
+  bottom: -1em;
+  background: #ffffff;
+  border-radius: 1em;
+  padding-bottom: 2em;
+
+  div {
+    margin: 0.5em 0.5em 0em 0.5em;
+  }
+
+  .contBtn {
+    display: flex;
+    justify-content: space-evenly;
+
+    .btn {
+      --border-radius: 2em;
+      text-transform: none;
+    }
+  }
 }
