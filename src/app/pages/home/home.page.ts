@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AppLauncher, AppLauncherOptions } from '@ionic-native/app-launcher/ngx';
-import { Platform } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { latLng, Map, marker, popup } from 'leaflet';
-import { Api, IApiLatLangs } from '../services/api';
-import { Helper } from '../services/helper';
-import { LeafletUtil } from '../services/leaflet-util';
-import { LocationManager } from '../services/location-manager';
+import { Api, IApiLatLangs } from '../../services/api';
+import { Helper } from '../../services/helper';
+import { LeafletUtil } from '../../services/leaflet-util';
+import { LocationManager } from '../../services/location-manager';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { NewVaterPage } from '../new-vater/new-vater.page';
 
 
 @Component({
@@ -42,7 +43,8 @@ export class HomePage implements OnInit {
     private helper: Helper,
     private appLauncher: AppLauncher,
     private platform: Platform,
-    private googlePlus: GooglePlus
+    private googlePlus: GooglePlus,
+    private modalController: ModalController
   ) { }
 
   async ngOnInit() {
@@ -118,7 +120,8 @@ export class HomePage implements OnInit {
         descripcion: `${revGeo.countryName} - ${revGeo.locality} - ${revGeo.thoroughfare}`,
         locality: revGeo.locality,
         name: 'truñaco en el campo',
-        puntuacion: 4
+        puntuacion: 4,
+        foto: ''
       }
       this.insertLatLang([item]);
 
@@ -174,7 +177,34 @@ export class HomePage implements OnInit {
         console.log(err)
       );
   }
+  /************************** ROUTER ************************/
+
+
+  public async launckModalNewVater() {
+    const modal = await this.modalController.create(
+      {
+        component: NewVaterPage
+      }
+    );
+
+
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    const latLng: IApiLatLangs = this.api.emptyApiLatLangs();
+    latLng.foto = result.data.result;
+    latLng.descripcion = '',
+    latLng.lat= '',
+    latLng.lng= '',
+    latLng.locality= '',
+    latLng.name= 'PRUEBA',
+    latLng.puntuacion = 5
+    debugger;
+    this.insertLatLang([latLng]);
+  }
+
 
 }
+
+
 
 

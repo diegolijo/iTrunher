@@ -14,7 +14,12 @@ import { ProHttp } from './services/http-provider';
 import { LeafletUtil } from './services/leaflet-util';
 import { LocationManager } from './services/location-manager';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
-
+import { ProPhoto } from './services/photo-provider';
+import { ProFile } from './services/file-provider';
+import { Camera } from '@ionic-native/camera/ngx';
+import { File } from '@ionic-native/file/ngx';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 
 
 @NgModule({
@@ -30,7 +35,13 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
     Helper,
     NativeGeocoder,
     AppLauncher,
-    GooglePlus
+    GooglePlus,
+    ProPhoto,
+    File,
+    ProFile,
+    Camera,
+    WebView,
+    PhotoViewer
   ],
   bootstrap: [AppComponent],
 })

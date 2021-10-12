@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionSheetController, AlertController, LoadingController, Platform, PopoverController, ToastController } from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, ModalController, Platform, PopoverController, ToastController } from '@ionic/angular';
 
 
 
@@ -47,6 +47,7 @@ export class Helper {
     private platform: Platform,
     private popoverCtrl: PopoverController,
     private actionSheetCtrl: ActionSheetController,
+    private modalController: ModalController
 
   ) { }
 

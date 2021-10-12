@@ -1,0 +1,11 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>nueva deposición</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button class="btn" (click)="launchTaekFoto()">nuevo</ion-button>
+  <ion-button class="btn" (click)="close()">cerrar</ion-button>
+  <img *ngFor="let photo of fotos" [src]="cab64+photo">
+</ion-content>

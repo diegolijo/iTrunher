@@ -78,7 +78,8 @@ export class Api {
       descripcion: '',
       name: '',
       locality: '',
-      puntuacion: 0
+      puntuacion: 0,
+      foto:''
     }
   }
 
@@ -93,5 +94,6 @@ export interface IApiLatLangs {
   descripcion: string;
   name: string;
   locality: string;
-  puntuacion: number
+  puntuacion: number,
+  foto: string
 }

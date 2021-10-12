@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" style="position: absolute; ">
+      <ion-button fill="clear" (click)="close()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    fotos
+
+  </ion-toolbar>
+
+
+</ion-header>
+
+<!--**************************************************************** FOTO *******************************************************-->
+<ion-content color="dark">
+  <ion-grid *ngIf="this.editingFoto === false" class="noMargin noPadding">
+    <ion-row>
+      <ion-col [size]="this.FotoSize" *ngFor="let photo of this.pagePhotos; index as i"
+        class="noMargin noPadding verticalCenterFlex" (click)="this.onClickPhoto(i)">
+
+        <ion-img src="{{ photo.url }}" class="paddingH2 paddingV2"> </ion-img>
+
+        <ion-item color="tertiary" class="paddingH2 paddingV2" [hidden]="photo.descripcion===''"
+          style="position: absolute; bottom: 0.2em; left:  0em;  height: 1.5em; width: 100%;">
+          <ion-label class="noMargin noPadding" style="position: absolute;top:0em">
+            {{photo.descripcion }}</ion-label>
+        </ion-item>
+
+        <!-- check seleccionada -->
+        <div [hidden]=" photo.isSelected === false"
+          style="position:absolute; top: 0em; left: 0em; height: 100%; width: 100%; z-index:2"
+          class="contenedorTertiary">
+          <ion-icon name="checkmark" slot="icon-only" color="secondary" style="height: 2em; width: 2em; ">
+          </ion-icon>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="center" *ngIf="!editingFoto">
+  <ion-fab-button (click)="onClicTakePhoto()">
+    <ion-icon name="camera" size="large"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
