@@ -1,33 +1,45 @@
-<ion-header [hidden]="this.selectedLoc.name"
-  style="position: absolute;bottom: 2em;z-index: 1000000;width: 100%;display: flex;justify-content: center;">
-  <ion-toolbar style="width: 90%;border-radius: 2em;">
-    <ion-title>iTruñer</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="cont-flotante">
+  <div class="bocadillo" [hidden]="this.selectedVater.name">
+    <ion-input class="input" [(ngModel)]="search"></ion-input>
+
+    <ion-button class="btn" (click)="onClickNewVaterMarcker()">
+      <ion-icon class="icon" name="add-outline" size="large"></ion-icon>
+    </ion-button>
+
+  </div>
+</div>
+
 
 <div id="map" #map class="mapa">
 </div>
 
-<!-- <div
-  style="display: flex; justify-content: space-evenly; position: absolute; bottom: 5em; z-index: 1000000; width: 100%;">
-  <ion-button (click)="getLatLangs()">select</ion-button>
-  <ion-button (click)="deleteLatLangs()">delete</ion-button>
-</div> -->
 
 
-<div #info [hidden]="!this.selectedLoc.name" class="contInfo">
-  <div> {{selectedLoc.name }} </div>
-  <div> {{selectedLoc.locality}} </div>
-  <div style=" min-height: 2.3em;"> {{selectedLoc.descripcion}}</div>
+<div #info [hidden]="!this.selectedVater.name" class="contInfo">
+  <div> {{selectedVater.name }} </div>
+  <div> {{selectedVater.locality}} </div>
+  <div style=" min-height: 2.3em;"> {{selectedVater.descripcion}}</div>
   <div>
     <ion-icon color="primary" *ngFor="let index of [1,2,3,4,5]" style="margin-right: 0.5em;height: 1.5em;width: 1.5em;"
-      [name]="index <= selectedLoc.puntuacion?  'star': 'star-outline'"
-      (click)="selectedLoc.puntuacion = selectedLoc.puntuacion !== index ? index: index-1">
+      [name]="index <= selectedVater.puntuacion?  'star': 'star-outline'"
+      (click)="selectedVater.puntuacion = selectedVater.puntuacion !== index ? index: index-1">
     </ion-icon>
   </div>
   <div class="contBtn">
-    <ion-button class="btn" (click)="onClickNav({lat: this.selectedLoc.lat,  lng:this.selectedLoc.lng})">puedo llegar!
+    <ion-button class="btn" (click)="onClickNav({lat: this.selectedVater.lat,  lng:this.selectedVater.lng})">
+      puedo llegar!
     </ion-button>
-    <ion-button class="btn" (click)="launckModalValoracion()">nuevo</ion-button>
+  </div>
+</div>
+
+
+
+<div *ngIf="newVaterMarker" class="contInfo">
+  <div> {{newVaterMarker.embebedObject.locality }} - {{newVaterMarker.embebedObject.administrativeArea}} </div>
+  <div style=" min-height: 2.3em;"> {{newVaterMarker.embebedObject.thoroughfare}}
+    {{newVaterMarker.embebedObject.subThoroughfare}}</div>
+  <div class="contBtn">
+    <ion-button class="btn" (click)="onClickNewVater()">comparte cagadero
+    </ion-button>
   </div>
 </div>

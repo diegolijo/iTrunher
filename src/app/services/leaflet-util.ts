@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable object-shorthand */
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -26,7 +28,7 @@ export class LeafletUtil {
   public readonly terrenoLayer = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   /* topo */
   public readonly topoLayer = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
- // public readonly standarLayer = '';
+  // public readonly standarLayer = '';
 
 
 
@@ -159,7 +161,14 @@ export class LeafletUtil {
 
   /****************************** MARKERS ******************************/
 
-  public crateLocationMarker(latlng: any, sIcon: string, onClickFuncion: any, embebedObject: any, options?: any): marker {
+  public crateLocationMarker(
+    latlng: any,
+    sIcon: string,
+    onClickFuncion: any,
+    onDragFuncion: any,
+    embebedObject: any,
+    options?: any
+  ): marker {
     const opt = {
       icon: icon({
         iconUrl: sIcon,
@@ -169,12 +178,16 @@ export class LeafletUtil {
         shadowAnchor: options ? options.shadowAnchor : [0, 0],  // the same for the shadow
         shadowSize: options ? options.shadowSize : [0, 0], // size of the shadow
         popupAnchor: options ? options.popupAnchor : [0, 0] // point from which  popup should open relat to the iconAnch
-      })
+      }),
+      draggable: options.draggable ? options.draggable : false
     };
     const markr: marker = marker(latLng(latlng.lat, latlng.lng), opt);
     markr['embebedObject'] = embebedObject;
     markr.on('click', (e) => {
       onClickFuncion(e);
+    });
+    markr.on('dragend', (e) => {
+      onDragFuncion(e);
     });
     return markr;
   }
@@ -186,21 +199,21 @@ export class LeafletUtil {
     return group;
   }
 
-  public addMarkerToMap(map: Map, marker: marker) {
-    marker.addTo(map);
+  public addMarkerToMap(map: Map, markr: marker) {
+    markr.addTo(map);
   }
 
 
 
-  public setSelectedMarker(marker: marker) {
-    marker.setIcon(icon({
+  public setSelectedVaterMarker(markr: marker) {
+    markr.setIcon(icon({
       iconUrl: this.vaterIconSelect,
       iconSize: [30, 30],
       iconAnchor: [15, 15]
     }));
   }
 
-  public clearSelectedMarker(selected: marker) {
+  public clearSelectedVaterMarker(selected: marker) {
     if (selected) {
       selected.setIcon(icon({
         iconUrl: this.vaterIcon,
@@ -217,6 +230,7 @@ export class LeafletUtil {
       map.getCenter(),
       this.deviceIcon,
       () => { this.flyToDevicePosition(map); },
+      {},
       null,
       { iconSize: [16, 16], iconAnchor: [8, 8] });
     this.devicePosition.addTo(map);

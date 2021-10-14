@@ -4,8 +4,11 @@ import { ProHttp } from './http-provider';
 @Injectable()
 export class Api {
 
-  private static localUrl = 'http://localhost/trunerDB.php';
-  private static url = 'https://vayapedal.com/API/datos.php';
+  // 'http://localhost/ApiTrunher.php'
+  // 'https://vayapedal.com/API/datos.php'
+  private static url = 'https://vayapedal.com/API/datos.php' ;
+
+
 
   constructor(
     private proHtml: ProHttp
@@ -79,8 +82,8 @@ export class Api {
       name: '',
       locality: '',
       puntuacion: 0,
-      foto:''
-    }
+      foto: ''
+    };
   }
 
 
@@ -94,6 +97,6 @@ export interface IApiLatLangs {
   descripcion: string;
   name: string;
   locality: string;
-  puntuacion: number,
-  foto: string
+  puntuacion: number;
+  foto: string;
 }

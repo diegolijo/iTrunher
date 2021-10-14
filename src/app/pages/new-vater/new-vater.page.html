@@ -5,7 +5,37 @@
 </ion-header>
 
 <ion-content>
-  <ion-button class="btn" (click)="launchTaekFoto()">nuevo</ion-button>
+
+
+
+  <ion-item lines="none">
+    <ion-label>
+      nombre
+    </ion-label>
+    <ion-input [(ngModel)]="vater.name" class="ion-text-center">
+    </ion-input>
+  </ion-item>
+
+
+  <ion-item lines="none" class="ion-text-start">
+    <ion-label>
+      Ciudad
+    </ion-label>
+    <ion-input [(ngModel)]="vater.locality" class="ion-text-center">
+    </ion-input>
+  </ion-item>
+
+  <ion-item lines="none">
+  
+      Descripción
+  
+  </ion-item>
+  <ion-textarea rows="10" style="--padding-top:0em"[(ngModel)]="vater.descripcion">
+  </ion-textarea>
+
+
+
+  <ion-button class="btn" (click)="launchTakeFoto()">nuevo</ion-button>
   <ion-button class="btn" (click)="close()">cerrar</ion-button>
-  <img *ngFor="let photo of fotos" [src]="cab64+photo">
+  <img *ngIf="foto" [src]="cab64 + foto">
 </ion-content>

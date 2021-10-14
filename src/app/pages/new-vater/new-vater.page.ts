@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Api, IApiLatLangs } from 'src/app/services/api';
 import { ProPhoto } from '../../services/photo-provider';
@@ -10,9 +10,12 @@ import { ProPhoto } from '../../services/photo-provider';
 })
 export class NewVaterPage implements OnInit {
 
+  @Input() newMarker: any;
 
-  public cab64 = 'data:image/jpg;base64,'
-  public fotos: string[] = [];
+  public cab64 = 'data:image/jpg;base64,';
+  public foto = '';
+
+  public vater: IApiLatLangs;
 
   constructor(
     private proPhoto: ProPhoto,
@@ -21,25 +24,29 @@ export class NewVaterPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.vater = this.api.emptyApiLatLangs();
+    this.newMarker;
+
   }
 
 
 
-  public async launchTaekFoto() {
+  public async launchTakeFoto() {
     const res = await this.proPhoto.takePhotoB64();
-    this.fotos.push(res);
+    this.foto = res;
   }
 
 
   public async insertDB() {
+
     const latLng: IApiLatLangs = this.api.emptyApiLatLangs();
-    latLng.foto = this.fotos[0];
-    latLng.descripcion = '',
-      latLng.lat = '',
-      latLng.lng = '',
-      latLng.locality = '',
-      latLng.name = 'PRUEBA',
-      latLng.puntuacion = 5
+    latLng.foto = this.foto;
+    latLng.descripcion = '';
+    latLng.lat = '';
+    latLng.lng = '';
+    latLng.locality = '';
+    latLng.name = 'PRUEBA';
+    latLng.puntuacion = 5;
 
     await this.api.insertLatLangs([latLng]);
   }
@@ -47,11 +54,7 @@ export class NewVaterPage implements OnInit {
 
   async close() {
     try {
-      this.insertDB();
-
-      await this.modalController.dismiss({
-        result: this.fotos[0]
-      });
+      this.modalController.dismiss({});
     } catch (err) {
       throw err;
     }

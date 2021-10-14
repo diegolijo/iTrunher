@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AppLauncher, AppLauncherOptions } from '@ionic-native/app-launcher/ngx';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { ModalController, Platform } from '@ionic/angular';
 import { latLng, Map, marker, popup } from 'leaflet';
 import { Api, IApiLatLangs } from '../../services/api';
 import { Helper } from '../../services/helper';
 import { LeafletUtil } from '../../services/leaflet-util';
-import { LocationManager } from '../../services/location-manager';
-import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { IReversedGeocoded, LocationManager } from '../../services/location-manager';
 import { NewVaterPage } from '../new-vater/new-vater.page';
 import { ValoracionesPage } from '../valoraciones/valoraciones.page';
 
@@ -28,12 +28,14 @@ export class HomePage implements OnInit {
   @ViewChild('info', { read: ElementRef, static: false }) infoRef: ElementRef;
   public map: Map;
   public markers: marker[] = [];
+  public newVaterMarker: marker;
   public popup: popup;
   public mapLayer = this.leafletUtil.terrenoLayer;
   public iconName = 'globe-sharp';
   public items: any;
-  public selectedLoc: IApiLatLangs;
-  public selectedMarker: marker;
+  public selectedVater: IApiLatLangs;
+  public selectedVaterMarker: marker;
+  public search = '';
   private isNavigator = false;
 
 
@@ -51,16 +53,177 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
 
-    this.selectedLoc = this.api.emptyApiLatLangs();
+    this.selectedVater = this.api.emptyApiLatLangs();
     this.items = await this.getLatLangs();
     await this.loadMap();
     await this.createMarkers();
-    this.leafletUtil.addMarkersToMap(this.map, this.markers)
+    this.leafletUtil.addMarkersToMap(this.map, this.markers);
+  }
+
+  /****************************** EVENTOS  *****************************/
+  //  google login
+  // TODO
+  public onClickLogin() {
+    this.googlePlus.login({
+      webClientId: '807138262633-pn5fbtt6hf6880nls6b74js16eo643me.apps.googleusercontent.com',
+      offline: true
+    }).then(res =>
+      console.log(res))
+      .catch(err =>
+        console.log(err)
+      );
+  }
+
+  // ROUTER
+  public async onClickNewVater() {
+
+    //  this.newVaterMarker.remove();
+    this.launckModalNewVater();
+  }
+
+  public async onClickValoracion() {
+    this.launckModalValoracion();
+  }
+
+  //  MAPA
+
+  // TODO click en el mapa, debe deseleccionar el vater actual y pintar newVaterMarker
+  public async onClickMap(e: any) {
+    try {
+      this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+      this.selectedVater = this.api.emptyApiLatLangs();
+
+      const revGeo = await this.locationManager.reverseGeocoder(e.latlng.lat, e.latlng.lng);
+      const item: IApiLatLangs = {
+        id: 0,
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+        descripcion: `${revGeo.countryName} - ${revGeo.locality} - ${revGeo.thoroughfare}`,
+        locality: revGeo.locality,
+        name: 'truñaco en el campo',
+        puntuacion: 4,
+        foto: ''
+      };
+      this.insertLatLang([item]);
+
+    } catch (err) {
+      this.helper.showException(err);
+    }
+  }
+
+  public onClickMarker(event: any): any {
+    this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+    this.selectedVaterMarker = event.sourceTarget;
+    this.leafletUtil.setSelectedVaterMarker(this.selectedVaterMarker);
+    this.selectedVater = this.selectedVaterMarker.embebedObject;
   }
 
 
 
-  //********************************** MAPA ***********************************/
+  // pintamos un marker con la ubicacion actual del dispositivo
+  // TODO borrar seleccion
+  public async onClickNewVaterMarcker() {
+    this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+    this.selectedVater = this.api.emptyApiLatLangs();
+
+    if (this.newVaterMarker) {
+      this.newVaterMarker.remove();
+    }
+
+    let data: IReversedGeocoded;
+    if (this.search) {
+      data = await this.locationManager.forwardGeocode(this.search);
+    } else {
+      data = await this.getLastReveseData();
+    }
+
+    this.newVaterMarker = this.leafletUtil.crateLocationMarker(
+      { lat: data.latitude, lng: data.longitude },
+      this.leafletUtil.dangerIcon,
+      {},
+      () => { this.setNewVaterReveseData(); },
+      data,
+      {
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        draggable: true
+      });
+
+    this.map.flyTo({ lat: data.latitude, lng: data.longitude }, 14);
+    this.leafletUtil.addMarkerToMap(this.map, this.newVaterMarker);
+  }
+
+
+
+
+
+
+  //ROUTER
+  public onClickNav(latLang) {
+    this.launchNavigator(latLang);
+  }
+
+  public onClickValoraciones() {
+    this.launckModalValoracion();
+  }
+
+  //*************************  FUNCIONES **************************/
+
+
+  // Location
+  public getLastReveseData() {
+    if (this.platform.is('cordova')) {
+      return this.locationManager.reverseGeocoder(
+        this.locationManager.getLastLocation().lat,
+        this.locationManager.getLastLocation().lng);
+    } else {
+      return {
+        latadministrativeArea: 'Galicia',
+        areasOfInterest: ['19'],
+        countryCode: 'ES',
+        countryName: 'Spain',
+        latitude: 42.867909999999995,
+        locality: 'Santiago de Compostela',
+        longitude: -8.53823,
+        postalCode: '15702',
+        subAdministrativeArea: 'A Coruña',
+        subLocality: '',
+        subThoroughfare: '19',
+        thoroughfare: 'Rúa das Santas Mariñas',
+      };
+    }
+  }
+
+  public async setNewVaterReveseData() {
+
+    this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+    this.selectedVater = this.api.emptyApiLatLangs();
+
+    if (this.platform.is('cordova')) {
+      this.newVaterMarker.embebedObject = await this.locationManager.reverseGeocoder(
+        this.newVaterMarker.getLatLng().lat,
+        this.newVaterMarker.getLatLng().lng);
+    } else {
+      this.newVaterMarker.embebedObject = {
+        latadministrativeArea: 'Galicia',
+        areasOfInterest: ['19'],
+        countryCode: 'ES',
+        countryName: 'Spain',
+        latitude: 42.867909999999995,
+        locality: 'Santiago de Compostela',
+        longitude: -8.53823,
+        postalCode: '15702',
+        subAdministrativeArea: 'A Coruña',
+        subLocality: '',
+        subThoroughfare: '19',
+        thoroughfare: 'Santiago de chile',
+      };
+    }
+  }
+
+
+
+  // MAPA
   private async loadMap() {
     try {
       await this.helper.delay(100);
@@ -86,12 +249,39 @@ export class HomePage implements OnInit {
         { lat: item.lat, lng: item.lng },
         this.leafletUtil.vaterIcon,
         (ev) => { this.onClickMarker(ev); },
+        {},
         item,
         { iconSize: [30, 30], iconAnchor: [15, 15] });
       this.markers.push(mark);
     }
   }
 
+
+
+  //ROUTER
+  private async launckModalNewVater() {
+    const modal = await this.modalController.create(
+      {
+        component: NewVaterPage,
+        componentProps: {
+          newMarker: this.newVaterMarker
+        }
+      }
+    );
+    await modal.present();
+    await modal.onDidDismiss();
+  }
+
+  private async launckModalValoracion() {
+    const modal = await this.modalController.create(
+      {
+        component: ValoracionesPage,
+        cssClass: 'contenedor-valoracion'
+      }
+    );
+    await modal.present();
+    await modal.onDidDismiss();
+  }
 
   // TODO observable que lance valoracion cuando vuelava del navigator
   private async launchNavigator(latLang: latLng) {
@@ -105,58 +295,19 @@ export class HomePage implements OnInit {
     const res = await this.appLauncher.canLaunch(options);
     if (res) {
       await this.appLauncher.launch(options);
-      this.isNavigator = true;
+      this.isNavigator = true; // TODO lanzar valoracion al volver del navigator
     } else {
       this.helper.showException('No se puede lanzar el navegador');
     }
   }
 
 
-  public async onClickMap(e: any) {
-    try {
-      this.leafletUtil.clearSelectedMarker(this.selectedMarker);
-      this.selectedLoc = this.api.emptyApiLatLangs();
+  // operaciones DB API
 
-      const revGeo = await this.locationManager.reverseGeocoder(e.latlng.lat, e.latlng.lng);
-      const item: IApiLatLangs = {
-        id: 0,
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-        descripcion: `${revGeo.countryName} - ${revGeo.locality} - ${revGeo.thoroughfare}`,
-        locality: revGeo.locality,
-        name: 'truñaco en el campo',
-        puntuacion: 4,
-        foto: ''
-      }
-      this.insertLatLang([item]);
-
-    } catch (err) {
-      this.helper.showException(err);
-    }
-  }
-
-  public onClickMarker(event: any): any {
-    this.leafletUtil.clearSelectedMarker(this.selectedMarker);
-    this.selectedMarker = event.sourceTarget;
-    this.leafletUtil.setSelectedMarker(this.selectedMarker);
-    this.selectedLoc = this.selectedMarker.embebedObject;
-  }
-
-  public onClickNav(latLang) {
-    this.launchNavigator(latLang);
-  }
-
-  public onClickValoraciones() {
-
-  }
-
-
-  /*************************** operaciones DB API ************************/
-
-  public async getLatLangs() {
+  private async getLatLangs() {
     const latLangs = await this.api.getLatLangs();
     for (const iterator of latLangs) {
-      console.log(iterator)
+      console.log(iterator);
     }
     return latLangs;
   }
@@ -165,47 +316,10 @@ export class HomePage implements OnInit {
     await this.api.insertLatLangs(items);
   }
 
-  public async deleteLatLangs() {
+  private async deleteLatLangs() {
     await this.api.deleteLatLangs();
   }
 
-  /*************************** google login ************************/
-
-  // TODO
-  onClickLogin() {
-    this.googlePlus.login({
-      webClientId: '807138262633-pn5fbtt6hf6880nls6b74js16eo643me.apps.googleusercontent.com',
-      offline: true
-    }).then(res =>
-      console.log(res))
-      .catch(err =>
-        console.log(err)
-      );
-  }
-  /************************** ROUTER ************************/
-
-
-  public async launckModalNewVater() {
-    const modal = await this.modalController.create(
-      {
-        component: NewVaterPage
-      }
-    );
-    await modal.present();
-    await modal.onDidDismiss();
-  }
-
-
-  public async launckModalValoracion() {
-    const modal = await this.modalController.create(
-      {
-        component: ValoracionesPage,
-        cssClass: 'contenedor-valoracion'
-      }
-    );
-    await modal.present();
-    await modal.onDidDismiss();
-  }
 
 
 }
