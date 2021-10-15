@@ -26,10 +26,16 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 
-.loader-class {}
-
+ 
 
 .contenedor-valoracion {
   margin: 2em;
   border-radius: 0.5em;
+}
+
+.loader-class {
+  --spinner-color: var(--ion-color-ligth);
+  .loading-wrapper {
+      border-radius: 0.5em;
+  }
 }

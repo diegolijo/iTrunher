@@ -1,5 +1,15 @@
+/* eslint-disable no-bitwise */
+/* eslint-disable one-var */
 import { Injectable } from '@angular/core';
-import { ActionSheetController, AlertController, LoadingController, ModalController, Platform, PopoverController, ToastController } from '@ionic/angular';
+import {
+  ActionSheetController,
+  AlertController,
+  LoadingController,
+  ModalController,
+  Platform,
+  PopoverController,
+  ToastController
+} from '@ionic/angular';
 
 
 
@@ -25,19 +35,19 @@ export const slugify = text =>
 export class Helper {
 
 
-
-
+  public confirmationAlert: HTMLIonAlertElement;
 
   public fabLeftOffset = 0;
   public fabBtn: any;
 
   private toastMgs: HTMLIonToastElement;
 
-  public confirmationAlert: HTMLIonAlertElement;
+
   private subscribeAlertBackButton: any;
 
   private subscribeBarcode: any;
   private timeOutLoader: any;
+
 
 
   constructor(
@@ -111,7 +121,6 @@ export class Helper {
     const res = (Math.round(value * (10 ** factor)) / (10 ** factor));
     return res;
   }
-
   // ************************************************ ELEMENTOS UI ********************************************************
 
   /**
@@ -137,21 +146,27 @@ export class Helper {
         if (res) {
           if (!this.timeOutLoader) {
             this.timeOutLoader = setTimeout(async () => {
-              this.showException(
-                'Tiempo excedido');
-            }, 60 * 1000);
+              this.showException('Tiempo excedido');
+            }, 1 * 60 * 1000);
           }
-          const opt = msg ? { message: msg, translucent: true, cssClass: 'loader-class' } : {};
+
+          const opt = {
+            spinner: 'circles',
+            translucent: true,
+            cssClass: 'loader-class',
+            message: msg || 'cagando'
+          };
           const appLoader = await this.loadingCtrl.create(options || opt);
           await appLoader.present();
           resolve(true);
-          console.log('showLoader');
+          // console.log('showLoader');
         }
       } catch (err) {
         reject(err);
       }
     });
   }
+
 
   /**
    * cierra los loader que haya en pantalla.
@@ -271,23 +286,6 @@ export class Helper {
     console.log(msg);
   }
 
-
-  /**
-   * recorre las propiedades de un objeto e imprime su contenido, si ulguna propiedades es un objeto
-   * realiza la operacion recursivamente
-   */
-  private getErrorMsg(error: any, msg: any) {
-    for (const key in error) {
-      if (Object.prototype.hasOwnProperty.call(error, key)) {
-        if (typeof error[key] === 'object') {
-          msg += this.getErrorMsg(error[key], msg);
-        } else if (typeof error[key] === 'string') {
-          msg += error[key] + '\n';
-        }
-      }
-    }
-    return msg ? msg : 'error indefinido';
-  }
 
 
   /**
@@ -428,7 +426,6 @@ export class Helper {
 
   public generateGuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      // tslint:disable-next-line: no-bitwise
       const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
@@ -555,6 +552,24 @@ export class Helper {
 
   public abs(n: number) {
     return Math.abs(n);
+  }
+
+
+  /**
+   * recorre las propiedades de un objeto e imprime su contenido, si ulguna propiedades es un objeto
+   * realiza la operacion recursivamente
+   */
+  private getErrorMsg(error: any, msg: any) {
+    for (const key in error) {
+      if (Object.prototype.hasOwnProperty.call(error, key)) {
+        if (typeof error[key] === 'object') {
+          msg += this.getErrorMsg(error[key], msg);
+        } else if (typeof error[key] === 'string') {
+          msg += error[key] + '\n';
+        }
+      }
+    }
+    return msg ? msg : 'error indefinido';
   }
 
 

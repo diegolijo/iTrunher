@@ -1,41 +1,48 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>nueva deposición</ion-title>
+    <ion-title>cagadero 'nuevo'</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
 
-
   <ion-item lines="none">
     <ion-label>
       nombre
     </ion-label>
-    <ion-input [(ngModel)]="vater.name" class="ion-text-center">
+    <ion-input [(ngModel)]="this.newMarker.embebedObject['name']" class="ion-text-center">
     </ion-input>
   </ion-item>
-
 
   <ion-item lines="none" class="ion-text-start">
     <ion-label>
       Ciudad
     </ion-label>
-    <ion-input [(ngModel)]="vater.locality" class="ion-text-center">
+    <!--     <ion-input [(ngModel)]="this.newMarker.embebedObject.locality" class="ion-text-center">
+    </ion-input> -->
+    <ion-input class="ion-text-center">
+      {{this.newMarker.embebedObject.administrativeArea +
+        ' ' + this.newMarker.embebedObject.subAdministrativeArea +
+        ' ' + this.newMarker.embebedObject.locality +
+        ' ' + this.newMarker.embebedObject.thoroughfare +
+        ' ' + this.newMarker.embebedObject.subThoroughfare }}
     </ion-input>
   </ion-item>
 
   <ion-item lines="none">
-  
-      Descripción
-  
+    Descripción
   </ion-item>
-  <ion-textarea rows="10" style="--padding-top:0em"[(ngModel)]="vater.descripcion">
+  <ion-textarea rows="10" style="--padding-top:0em" [(ngModel)]="this.newMarker.embebedObject['descripcion']">
   </ion-textarea>
 
 
 
-  <ion-button class="btn" (click)="launchTakeFoto()">nuevo</ion-button>
-  <ion-button class="btn" (click)="close()">cerrar</ion-button>
   <img *ngIf="foto" [src]="cab64 + foto">
+
+
+  <ion-button class="btn" (click)="insertDB()">guardar</ion-button>
+  <ion-button class="btn" (click)="launchTakeFoto()">foto</ion-button>
+  <ion-button class="btn" (click)="close()">cerrar</ion-button>
+
 </ion-content>

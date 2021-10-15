@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { IFileFotos } from '../pages/fotos-modal/fotos-modal.page';
@@ -9,11 +10,11 @@ import { IFileFotos } from '../pages/fotos-modal/fotos-modal.page';
 export class ProPhoto {
 
 
+  private static CAM_QUALITY = 50;
 
   public photos: IFileFotos[] = [];
   public base64Image: string;
   public imageData: any;
-  private readonly CAM_QUALITY = 1;
 
   constructor(
     private camera: Camera
@@ -31,7 +32,7 @@ export class ProPhoto {
       mediaType: this.camera.MediaType.PICTURE,
       correctOrientation: true,
       sourceType: this.camera.PictureSourceType.CAMERA,
-      quality: this.CAM_QUALITY,
+      quality: ProPhoto.CAM_QUALITY,
       destinationType: this.camera.DestinationType.DATA_URL,
       saveToPhotoAlbum: false
     };
@@ -48,7 +49,7 @@ export class ProPhoto {
       mediaType: this.camera.MediaType.PICTURE,
       correctOrientation: true,
       sourceType: this.camera.PictureSourceType.CAMERA,
-      quality: this.CAM_QUALITY,
+      quality: ProPhoto.CAM_QUALITY,
       destinationType: this.camera.DestinationType.FILE_URI,
       saveToPhotoAlbum: false
     };

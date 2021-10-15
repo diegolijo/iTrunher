@@ -97,6 +97,26 @@ export class LocationManager {
   }
 
 
+
+
+  public emptyIReversedGeocoded(): IReversedGeocoded {
+    return {
+      administrativeArea: '',
+      areasOfInterest: [],
+      countryCode: '',
+      countryName: '',
+      latitude: 0,
+      locality: '',
+      longitude: 0,
+      postalCode: '',
+      subAdministrativeArea: '',
+      subLocality: '',
+      subThoroughfare: '',
+      thoroughfare: '',
+    };
+  }
+
+
   // TODO
   private filterReversedGeocoded(reversedGeocoded: any[]) {
     let locality = reversedGeocoded[0];
@@ -149,7 +169,7 @@ export class LocationManager {
 
 
 export interface IReversedGeocoded {
-  latadministrativeArea: string;
+  administrativeArea: string;
   areasOfInterest: string[];
   countryCode: string;
   countryName: string;

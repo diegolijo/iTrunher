@@ -12,6 +12,8 @@ import { NewVaterPage } from '../new-vater/new-vater.page';
 import { ValoracionesPage } from '../valoraciones/valoraciones.page';
 
 
+const NEAR_ZOOM = 14.5;
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -37,6 +39,7 @@ export class HomePage implements OnInit {
   public selectedVaterMarker: marker;
   public search = '';
   private isNavigator = false;
+  private subscribeBackButton: any;
 
 
 
@@ -52,15 +55,20 @@ export class HomePage implements OnInit {
   ) { }
 
   async ngOnInit() {
-
-    this.selectedVater = this.api.emptyApiLatLangs();
-    this.items = await this.getLatLangs();
-    await this.loadMap();
-    await this.createMarkers();
-    this.leafletUtil.addMarkersToMap(this.map, this.markers);
+    await this.initOrRefreshPage();
   }
 
-  /****************************** EVENTOS  *****************************/
+
+
+  async ionViewDidEnter() {
+    this.subscribeToBackButton();
+  }
+
+  async ionViewDidLeave() {
+    this.unsubscribeBackButton();
+  }
+
+  /**************************************************** EVENTOS  ********************************************************/
   //  google login
   // TODO
   public onClickLogin() {
@@ -76,7 +84,6 @@ export class HomePage implements OnInit {
 
   // ROUTER
   public async onClickNewVater() {
-
     //  this.newVaterMarker.remove();
     this.launckModalNewVater();
   }
@@ -85,34 +92,49 @@ export class HomePage implements OnInit {
     this.launckModalValoracion();
   }
 
-  //  MAPA
+  //   MAPA
 
-  // TODO click en el mapa, debe deseleccionar el vater actual y pintar newVaterMarker
+  /**
+   * pinchamos sobre un punto cualquiera del mapa
+   */
   public async onClickMap(e: any) {
     try {
       this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
       this.selectedVater = this.api.emptyApiLatLangs();
 
-      const revGeo = await this.locationManager.reverseGeocoder(e.latlng.lat, e.latlng.lng);
-      const item: IApiLatLangs = {
-        id: 0,
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-        descripcion: `${revGeo.countryName} - ${revGeo.locality} - ${revGeo.thoroughfare}`,
-        locality: revGeo.locality,
-        name: 'truñaco en el campo',
-        puntuacion: 4,
-        foto: ''
-      };
-      this.insertLatLang([item]);
+      if (this.newVaterMarker) {
+        this.newVaterMarker.remove();
+      }
+
+      const data: IReversedGeocoded = await this.getReveseData(e.latlng);
+
+      this.newVaterMarker = this.leafletUtil.crateLocationMarker(
+        { lat: data.latitude, lng: data.longitude },
+        this.leafletUtil.dangerIcon,
+        {},
+        () => { this.setNewVaterReveseData(); },
+        data,
+        {
+          iconSize: [30, 30],
+          iconAnchor: [15, 30],
+          draggable: true
+        });
+
+      this.map.flyTo({ lat: data.latitude, lng: data.longitude }, this.setZoomCloseIfFar());
+      this.leafletUtil.addMarkerToMap(this.map, this.newVaterMarker);
 
     } catch (err) {
       this.helper.showException(err);
     }
   }
 
+
+
+  /**
+   *  pinchamos sobre un vater del mapa
+   */
   public onClickMarker(event: any): any {
-    this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+    this.clearAllMarkers();
     this.selectedVaterMarker = event.sourceTarget;
     this.leafletUtil.setSelectedVaterMarker(this.selectedVaterMarker);
     this.selectedVater = this.selectedVaterMarker.embebedObject;
@@ -154,10 +176,6 @@ export class HomePage implements OnInit {
   }
 
 
-
-
-
-
   //ROUTER
   public onClickNav(latLang) {
     this.launchNavigator(latLang);
@@ -167,7 +185,11 @@ export class HomePage implements OnInit {
     this.launckModalValoracion();
   }
 
-  //*************************  FUNCIONES **************************/
+  //*************************************************  FUNCIONES ************************************************************/
+
+
+
+
 
 
   // Location
@@ -176,9 +198,10 @@ export class HomePage implements OnInit {
       return this.locationManager.reverseGeocoder(
         this.locationManager.getLastLocation().lat,
         this.locationManager.getLastLocation().lng);
-    } else {
+    }
+    if (!this.platform.is('cordova')) {
       return {
-        latadministrativeArea: 'Galicia',
+        administrativeArea: 'Galicia',
         areasOfInterest: ['19'],
         countryCode: 'ES',
         countryName: 'Spain',
@@ -194,6 +217,31 @@ export class HomePage implements OnInit {
     }
   }
 
+  public getReveseData(latLngs) {
+    if (this.platform.is('cordova')) {
+      return this.locationManager.reverseGeocoder(latLngs.lat, latLngs.lng);
+    }
+    if (!this.platform.is('cordova')) {
+      return {
+        administrativeArea: 'Galicia',
+        areasOfInterest: ['19'],
+        countryCode: 'ES',
+        countryName: 'Spain',
+        latitude: 42.867909999999995,
+        locality: 'Santiago de Compostela',
+        longitude: -8.53823,
+        postalCode: '15702',
+        subAdministrativeArea: 'A Coruña',
+        subLocality: '',
+        subThoroughfare: '19',
+        thoroughfare: 'pruebasasasas',
+      };
+    }
+  }
+
+  /**
+   * actualiza los datos del vates al mover el cursor
+   */
   public async setNewVaterReveseData() {
 
     this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
@@ -203,9 +251,11 @@ export class HomePage implements OnInit {
       this.newVaterMarker.embebedObject = await this.locationManager.reverseGeocoder(
         this.newVaterMarker.getLatLng().lat,
         this.newVaterMarker.getLatLng().lng);
-    } else {
+    }
+
+    if (!this.platform.is('cordova')) {
       this.newVaterMarker.embebedObject = {
-        latadministrativeArea: 'Galicia',
+        administrativeArea: 'Galicia',
         areasOfInterest: ['19'],
         countryCode: 'ES',
         countryName: 'Spain',
@@ -221,29 +271,55 @@ export class HomePage implements OnInit {
     }
   }
 
-
+  /**
+   * devuelve un zoom cercano o el actual si está cerca
+   */
+  private setZoomCloseIfFar(): any {
+    return NEAR_ZOOM > this.map.getZoom() ? NEAR_ZOOM : this.map.getZoom();
+  }
 
   // MAPA
+
+  /**
+   * inicializa, recupera de la api y reconstruye el mapa con todos los vateres
+   */
+  private async initOrRefreshPage() {
+    this.selectedVater = this.api.emptyApiLatLangs();
+    this.items = await this.getLatLangs();
+    await this.loadMap();
+    await this.createMarkers();
+    if (this.markers.length) {
+      this.leafletUtil.addMarkersToMap(this.map, this.markers);
+    }
+  }
+
+
+
   private async loadMap() {
     try {
-      await this.helper.delay(100);
-      const location: any = await this.locationManager.getCurrentPosition();
-      this.map = await this.leafletUtil.loadMap(
-        this.map,
-        this.mapRef.nativeElement,
-        this.mapLayer,
-        10,
-        2,
-        18,
-        { lat: location.coords.latitude, lng: location.coords.longitude },
-        (e) => { this.onClickMap(e); });
+      if (!this.map) {
+        await this.helper.delay(100);
+        const location: any = await this.locationManager.getCurrentPosition();
 
+        this.map = await this.leafletUtil.loadMap(
+          this.map,
+          this.mapRef.nativeElement,
+          this.mapLayer,
+          10,
+          2,
+          18,
+          { lat: location.coords.latitude, lng: location.coords.longitude },
+          (e) => { this.onClickMap(e); });
+      }
     } catch (err) {
       this.helper.showException(err);
     }
   }
 
   private async createMarkers() {
+    for (const markr of this.markers) {
+      markr.remove();
+    }
     for (const item of this.items) {
       const mark = await this.leafletUtil.crateLocationMarker(
         { lat: item.lat, lng: item.lng },
@@ -256,6 +332,30 @@ export class HomePage implements OnInit {
     }
   }
 
+  /**
+   * elimina el markador nuevoVater y resetea los vateres
+   */
+  private clearAllMarkers() {
+    this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
+    this.selectedVater = this.api.emptyApiLatLangs();
+    if (this.newVaterMarker) {
+      this.newVaterMarker.remove();
+      this.newVaterMarker.embebedObject = this.locationManager.emptyIReversedGeocoded();
+    }
+  }
+
+  /**
+   * elimina todos los markers del mapa
+   */
+  private removeAllMarkers() {
+    for (const markr of this.markers) {
+      markr.remove();
+    }
+    if (this.newVaterMarker) {
+      this.newVaterMarker.remove();
+      this.newVaterMarker.embebedObject = this.locationManager.emptyIReversedGeocoded();
+    }
+  }
 
 
   //ROUTER
@@ -268,9 +368,26 @@ export class HomePage implements OnInit {
         }
       }
     );
+    this.unsubscribeBackButton();// TODO
     await modal.present();
     await modal.onDidDismiss();
+    this.initOrRefreshPage();
+    this.subscribeToBackButton(); // TODO
   }
+
+
+
+  /**
+   * reconstruye todos los vateres del mapa
+   */
+  /*   private async refreshMarkers() {
+      await this.removeAllMarkers();
+      await this.createMarkers();
+      debugger;
+      if (this.markers.length) {
+        this.leafletUtil.addMarkersToMap(this.map, this.markers);
+      }
+   }  */
 
   private async launckModalValoracion() {
     const modal = await this.modalController.create(
@@ -321,9 +438,38 @@ export class HomePage implements OnInit {
   }
 
 
+  // ******************************************** subscribe Back butom ***************************************
+  private async subscribeToBackButton() {
+    try {
+      if (!this.subscribeBackButton || this.subscribeBackButton.closed) {
+        this.subscribeBackButton = await this.platform.backButton.subscribeWithPriority(100000, () => {
+          this.subscribeFunctionBack();
+        });
+      }
+    } catch (error) {
+      this.helper.showException(error);
+    }
+  }
+
+  private async unsubscribeBackButton() {
+    try {
+      if (this.subscribeBackButton && !this.subscribeBackButton.closed) {
+        await this.subscribeBackButton.unsubscribe();
+      }
+
+    } catch (error) {
+      this.helper.showException(error);
+    }
+  }
+
+  private async subscribeFunctionBack() {
+    try {
+      this.clearAllMarkers();
+    } catch (error) {
+      this.helper.showException(error);
+    }
+  }
 
 }
-
-
 
 
