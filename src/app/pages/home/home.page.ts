@@ -4,6 +4,7 @@ import { AppLauncher, AppLauncherOptions } from '@ionic-native/app-launcher/ngx'
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { ModalController, Platform } from '@ionic/angular';
 import { latLng, Map, marker, popup } from 'leaflet';
+import { ProPhoto } from 'src/app/services/photo-provider';
 import { Api, IApiLatLangs } from '../../services/api';
 import { Helper } from '../../services/helper';
 import { LeafletUtil } from '../../services/leaflet-util';
@@ -21,6 +22,7 @@ const NEAR_ZOOM = 14.5;
 })
 export class HomePage implements OnInit {
 
+
   static NAVIGATION_PACKAGE = 'google.navigation:q=';
   static WALK_MODE = '&mode=w';
   static MAPS_PACKAGE = 'com.google.android.apps.maps';
@@ -29,6 +31,9 @@ export class HomePage implements OnInit {
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef;
   @ViewChild('info', { read: ElementRef, static: false }) infoRef: ElementRef;
   public map: Map;
+
+  public cab64 = ProPhoto.CAM_QUALITY;
+
   public markers: marker[] = [];
   public newVaterMarker: marker;
   public popup: popup;
@@ -40,7 +45,6 @@ export class HomePage implements OnInit {
   public search = '';
   private isNavigator = false;
   private subscribeBackButton: any;
-
 
 
   constructor(
