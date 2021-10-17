@@ -14,7 +14,7 @@ export class NewVaterPage implements OnInit {
 
   @Input() newMarker: any;
 
-  public cab64 = 'data:image/jpg;base64,';
+  public cab64 = ProPhoto.CAM_QUALITY;
   public foto = '';
 
   public vater: IApiLatLangs;

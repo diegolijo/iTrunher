@@ -83,13 +83,20 @@ export class LocationManager {
 
 
   public async forwardGeocode(text: string) {
-    const forwardGeocode: any = await this.nativeGeocoder.forwardGeocode(text, {
-      useLocale: true,
-      maxResults: 5,
-      defaultLocale: 'gl_ES'
-    });
-    console.log(forwardGeocode);
-    return this.filterForwardGeocode(forwardGeocode);
+    try {
+
+      const forwardGeocode: any = await this.nativeGeocoder.forwardGeocode(text, {
+        useLocale: true,
+        maxResults: 5,
+        defaultLocale: 'gl_ES'
+      });
+      console.log(forwardGeocode);
+      return this.filterForwardGeocode(forwardGeocode);
+
+    } catch (err) {
+      this.helper.showException('No se encuentra el truñadero que buscas... \
+       Quizás no llamas a las cosas por su nombre');
+    }
   }
 
   public getLastLocation(): latLng {

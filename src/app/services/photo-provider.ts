@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
@@ -9,8 +10,9 @@ import { IFileFotos } from '../pages/fotos-modal/fotos-modal.page';
 @Injectable()
 export class ProPhoto {
 
+  public cab64 = 'data:image/jpg;base64,';
 
-  private static CAM_QUALITY = 50;
+  public static CAM_QUALITY = 50;
 
   public photos: IFileFotos[] = [];
   public base64Image: string;
