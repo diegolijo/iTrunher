@@ -14,12 +14,14 @@
 </div>
 
 
-<!-- info  vater -->
-<div #info [hidden]="!this.selectedVater.name" class="contInfo">
+
+<div #info *ngIf="this.selectedVater.name" class="contInfo">
   <div> {{selectedVater.name }} </div>
   <div> {{selectedVater.locality}} </div>
   <div style=" min-height: 2.3em;"> {{selectedVater.descripcion}}</div>
-  <img [src]="selectedVater.foto">
+  <img *ngIf="this.selectedVaterMarker.embebedObject.foto"
+    [src]="this.cab64 + this.selectedVaterMarker.embebedObject.foto" style="width: 20%; height: auto;">
+  <div>
     <ion-icon color="primary" *ngFor="let index of [1,2,3,4,5]" style="margin-right: 0.5em;height: 1.5em;width: 1.5em;"
       [name]="index <= selectedVater.puntuacion?  'star': 'star-outline'"
       (click)="selectedVater.puntuacion = selectedVater.puntuacion !== index ? index: index-1">
@@ -33,7 +35,6 @@
 </div>
 
 
-<!-- info localizacion/ nuevo  -->
 <div *ngIf="newVaterMarker  && newVaterMarker.embebedObject.administrativeArea" class="contInfo">
   <div> {{newVaterMarker.embebedObject.locality }} - {{newVaterMarker.embebedObject.administrativeArea}} </div>
   <div style=" min-height: 2.3em;"> {{newVaterMarker.embebedObject.thoroughfare}}
