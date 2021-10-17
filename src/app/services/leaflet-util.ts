@@ -81,6 +81,7 @@ export class LeafletUtil {
           funcion(e);
         });
         this.initWatchPosition(map);
+    //    map.locate({ setView: true, watch: true });
         resolve(map);
       } catch (err) {
         reject(err);
@@ -111,54 +112,54 @@ export class LeafletUtil {
 
   /****************************** POPUPS ******************************/
 
-  public async createPopup(mapParte: any, map: Map, popUp: popup, onClickNavBtn: any, onClickListBtn: any) {
-    await map.closePopup();
-    await this.helper.delay(200); // para que el clicklistener funcione si cambiamos de popoup sin cerrar el anterior
-    popUp = popup(
-      {
-        minWidth: 200,
-        autoPanPaddingTopLeft: point(0, 20)
-      });
-    popUp.setLatLng(mapParte.latlng);
-    const html = this.generatePopupHTML(mapParte);
-    popUp.setContent(html);
-    popUp.openOn(map);
+  /*  public async createPopup(mapParte: any, map: Map, popUp: popup, onClickNavBtn: any, onClickListBtn: any) {
+     await map.closePopup();
+     await this.helper.delay(200); // para que el clicklistener funcione si cambiamos de popoup sin cerrar el anterior
+     popUp = popup(
+       {
+         minWidth: 200,
+         autoPanPaddingTopLeft: point(0, 20)
+       });
+     popUp.setLatLng(mapParte.latlng);
+     const html = this.generatePopupHTML(mapParte);
+     popUp.setContent(html);
+     popUp.openOn(map);
 
-    const btnNav = DomUtil.get('btnNav');
-    DomEvent.addListener(btnNav, 'click', () => {
-      onClickNavBtn(mapParte.latlng);
-    });
+     const btnNav = DomUtil.get('btnNav');
+     DomEvent.addListener(btnNav, 'click', () => {
+       onClickNavBtn(mapParte.latlng);
+     });
 
-    const btnList = DomUtil.get('btnList');
-    DomEvent.addListener(btnList, 'click', () => {
-      onClickListBtn(mapParte.partes[0].pt_ccl);
-    });
+     const btnList = DomUtil.get('btnList');
+     DomEvent.addListener(btnList, 'click', () => {
+       onClickListBtn(mapParte.partes[0].pt_ccl);
+     });
 
-    return popUp;
-  }
+     return popUp;
+   }
 
-  private generatePopupHTML(mapParte: any) {
-    let html2 = `<div  style="text-align:center">
-               <p style="margin-top: 1em; margin-bottom: 0em; font-weight: bolder; width:100%;">${mapParte.dlName}<br>partes:</p>`;
-    for (const parte of mapParte.partes) {
-      const color = parte.pt_prio === '02' ? 'var(--ion-color-sucess)' :
-        parte.pt_prio === '03' ? 'var(--ion-color-warning)' :
-          parte.pt_prio === '04' ? 'var(--ion-color-danger)' : 'var(--ion-color-dark)';
-      html2 += `<li style="color:${color};  margin: 0 0 0 -1.5em">
-              ${parte.codex} ${parte.pt_tipo} ${parte.pt_fecp}</li>`;
-    }
-    html2 += `<div style = "display:flex;flex-direction: row;justify-content: space-evenly; margin-top: 1em" >
-                          <ion-button color="secondary" fill="outline"  id="btnNav" style="width: 2.5em; height: 2.5em;" >
-                              <ion-icon name="navigate-circle-outline"  size="large" style ="position:absolute"></ion-icon>
-                          </ion-button>
-                          <ion-button color="secondary" fill="outline" id="btnList" style ="width: 2.5em; height: 2.5em;" >
-                              <ion-icon name="list-outline" size="large" style ="position:absolute" ></ion-icon>
-                          </ion-button>
-                        </div>
-                      </div>`;
-    return html2;
-  }
-
+   private generatePopupHTML(mapParte: any) {
+     let html2 = `<div  style="text-align:center">
+                <p style="margin-top: 1em; margin-bottom: 0em; font-weight: bolder; width:100%;">${mapParte.dlName}<br>partes:</p>`;
+     for (const parte of mapParte.partes) {
+       const color = parte.pt_prio === '02' ? 'var(--ion-color-sucess)' :
+         parte.pt_prio === '03' ? 'var(--ion-color-warning)' :
+           parte.pt_prio === '04' ? 'var(--ion-color-danger)' : 'var(--ion-color-dark)';
+       html2 += `<li style="color:${color};  margin: 0 0 0 -1.5em">
+               ${parte.codex} ${parte.pt_tipo} ${parte.pt_fecp}</li>`;
+     }
+     html2 += `<div style = "display:flex;flex-direction: row;justify-content: space-evenly; margin-top: 1em" >
+                           <ion-button color="secondary" fill="outline"  id="btnNav" style="width: 2.5em; height: 2.5em;" >
+                               <ion-icon name="navigate-circle-outline"  size="large" style ="position:absolute"></ion-icon>
+                           </ion-button>
+                           <ion-button color="secondary" fill="outline" id="btnList" style ="width: 2.5em; height: 2.5em;" >
+                               <ion-icon name="list-outline" size="large" style ="position:absolute" ></ion-icon>
+                           </ion-button>
+                         </div>
+                       </div>`;
+     return html2;
+   }
+  */
   /****************************** MARKERS ******************************/
 
   public crateLocationMarker(

@@ -9,8 +9,9 @@ import { IFileFotos } from '../pages/fotos-modal/fotos-modal.page';
 @Injectable()
 export class ProPhoto {
 
+  public static CAB_64 = 'data:image/jpg;base64,';
 
-  private static CAM_QUALITY = 50;
+  public static CAM_QUALITY = 50;
 
   public photos: IFileFotos[] = [];
   public base64Image: string;

@@ -14,7 +14,7 @@ export class NewVaterPage implements OnInit {
 
   @Input() newMarker: any;
 
-  public cab64 = 'data:image/jpg;base64,';
+  public cab64 = ProPhoto.CAB_64;
   public foto = '';
 
   public vater: IApiLatLangs;
@@ -28,7 +28,11 @@ export class NewVaterPage implements OnInit {
 
   ngOnInit() {
     this.vater = this.api.emptyApiLatLangs();
-    // this.newMarker;
+    this.newMarker.embebedObject['direccion'] = this.newMarker.embebedObject.administrativeArea +
+      ' ' + this.newMarker.embebedObject.subAdministrativeArea +
+      ' ' + this.newMarker.embebedObject.locality +
+      ' ' + this.newMarker.embebedObject.thoroughfare +
+      ' ' + this.newMarker.embebedObject.subThoroughfare;
 
   }
 

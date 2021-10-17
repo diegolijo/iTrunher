@@ -13,7 +13,7 @@ import { NewVaterPage } from '../new-vater/new-vater.page';
 import { ValoracionesPage } from '../valoraciones/valoraciones.page';
 
 
-const NEAR_ZOOM = 14.5;
+const NEAR_ZOOM = 14;
 
 @Component({
   selector: 'app-home',
@@ -32,14 +32,14 @@ export class HomePage implements OnInit {
   @ViewChild('info', { read: ElementRef, static: false }) infoRef: ElementRef;
   public map: Map;
 
-  public cab64 = ProPhoto.CAM_QUALITY;
+  public cab64 = ProPhoto.CAB_64;
 
   public markers: marker[] = [];
   public newVaterMarker: marker;
   public popup: popup;
   public mapLayer = this.leafletUtil.terrenoLayer;
   public iconName = 'globe-sharp';
-  public items: any;
+  public apiItems: any;
   public selectedVater: IApiLatLangs;
   public selectedVaterMarker: marker;
   public search = '';
@@ -56,6 +56,7 @@ export class HomePage implements OnInit {
     private platform: Platform,
     private googlePlus: GooglePlus,
     private modalController: ModalController
+
   ) { }
 
   async ngOnInit() {
@@ -110,7 +111,7 @@ export class HomePage implements OnInit {
         this.newVaterMarker.remove();
       }
 
-      const data: IReversedGeocoded = await this.getReveseData(e.latlng);
+      const data: IReversedGeocoded = await this.reverseGeocoder(e.latlng);
 
       this.newVaterMarker = this.leafletUtil.crateLocationMarker(
         { lat: data.latitude, lng: data.longitude },
@@ -124,7 +125,7 @@ export class HomePage implements OnInit {
           draggable: true
         });
 
-      this.map.flyTo({ lat: data.latitude, lng: data.longitude }, this.setZoomCloseIfFar());
+      this.map.flyTo({ lat: data.latitude, lng: data.longitude }, this.getZoomCloseIfFar());
       this.leafletUtil.addMarkerToMap(this.map, this.newVaterMarker);
 
     } catch (err) {
@@ -142,12 +143,12 @@ export class HomePage implements OnInit {
     this.selectedVaterMarker = event.sourceTarget;
     this.leafletUtil.setSelectedVaterMarker(this.selectedVaterMarker);
     this.selectedVater = this.selectedVaterMarker.embebedObject;
+    this.map.flyTo({ lat: this.selectedVater.lat, lng: this.selectedVater.lng }, this.getZoomCloseIfFar());
   }
 
 
 
   // pintamos un marker con la ubicacion actual del dispositivo
-  // TODO borrar seleccion
   public async onClickNewVaterMarcker() {
     this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
     this.selectedVater = this.api.emptyApiLatLangs();
@@ -191,17 +192,13 @@ export class HomePage implements OnInit {
 
   //*************************************************  FUNCIONES ************************************************************/
 
-
-
-
-
-
   // Location
-  public getLastReveseData() {
+  public async getLastReveseData() {
     if (this.platform.is('cordova')) {
-      return this.locationManager.reverseGeocoder(
-        this.locationManager.getLastLocation().lat,
-        this.locationManager.getLastLocation().lng);
+      return await this.reverseGeocoder({
+        lat: this.locationManager.getLastLocation().lat,
+        lng: this.locationManager.getLastLocation().lng
+      });
     }
     if (!this.platform.is('cordova')) {
       return {
@@ -221,64 +218,77 @@ export class HomePage implements OnInit {
     }
   }
 
-  public getReveseData(latLngs) {
-    if (this.platform.is('cordova')) {
-      return this.locationManager.reverseGeocoder(latLngs.lat, latLngs.lng);
-    }
-    if (!this.platform.is('cordova')) {
-      return {
-        administrativeArea: 'Galicia',
-        areasOfInterest: ['19'],
-        countryCode: 'ES',
-        countryName: 'Spain',
-        latitude: 42.867909999999995,
-        locality: 'Santiago de Compostela',
-        longitude: -8.53823,
-        postalCode: '15702',
-        subAdministrativeArea: 'A Coruña',
-        subLocality: '',
-        subThoroughfare: '19',
-        thoroughfare: 'pruebasasasas',
-      };
-    }
-  }
+  /*   public getReveseData(latLngs) {
+      if (this.platform.is('cordova')) {
+        return this.locationManager.reverseGeocoder(latLngs.lat, latLngs.lng);
+      }
+      if (!this.platform.is('cordova')) {
+        return {
+          administrativeArea: 'Galicia',
+          areasOfInterest: ['19'],
+          countryCode: 'ES',
+          countryName: 'Spain',
+          latitude: 42.867909999999995,
+          locality: 'Santiago de Compostela',
+          longitude: -8.53823,
+          postalCode: '15702',
+          subAdministrativeArea: 'A Coruña',
+          subLocality: '',
+          subThoroughfare: '19',
+          thoroughfare: 'pruebasasasas',
+        };
+      }
+    } */
 
   /**
    * actualiza los datos del vates al mover el cursor
    */
   public async setNewVaterReveseData() {
-
     this.leafletUtil.clearSelectedVaterMarker(this.selectedVaterMarker);
     this.selectedVater = this.api.emptyApiLatLangs();
+    // TODO conservar latlang si no hay nada en la direccion seleccionada
+    this.newVaterMarker.embebedObject = await this.reverseGeocoder({
+      lat: this.newVaterMarker.getLatLng().lat,
+      lng: this.newVaterMarker.getLatLng().lng
+    });
+  }
 
-    if (this.platform.is('cordova')) {
-      this.newVaterMarker.embebedObject = await this.locationManager.reverseGeocoder(
-        this.newVaterMarker.getLatLng().lat,
-        this.newVaterMarker.getLatLng().lng);
-    }
 
-    if (!this.platform.is('cordova')) {
-      this.newVaterMarker.embebedObject = {
-        administrativeArea: 'Galicia',
-        areasOfInterest: ['19'],
-        countryCode: 'ES',
-        countryName: 'Spain',
-        latitude: 42.867909999999995,
-        locality: 'Santiago de Compostela',
-        longitude: -8.53823,
-        postalCode: '15702',
-        subAdministrativeArea: 'A Coruña',
-        subLocality: '',
-        subThoroughfare: '19',
-        thoroughfare: 'Santiago de chile',
-      };
-    }
+
+  private async reverseGeocoder(latLngs): Promise<IReversedGeocoded> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (this.platform.is('cordova')) {
+          const res = await this.locationManager.reverseGeocoder(latLngs.lat, latLngs.lng);
+          resolve(res);
+        }
+        if (!this.platform.is('cordova')) {
+          const res = {
+            administrativeArea: 'Galicia',
+            areasOfInterest: ['19'],
+            countryCode: 'ES',
+            countryName: 'Spain',
+            latitude: 42.867909999999995,
+            locality: 'Santiago de Compostela',
+            longitude: -8.53823,
+            postalCode: '15702',
+            subAdministrativeArea: 'A Coruña',
+            subLocality: '',
+            subThoroughfare: '19',
+            thoroughfare: 'Santiago de chile',
+          };
+          resolve(res);
+        }
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 
   /**
    * devuelve un zoom cercano o el actual si está cerca
    */
-  private setZoomCloseIfFar(): any {
+  private getZoomCloseIfFar(): any {
     return NEAR_ZOOM > this.map.getZoom() ? NEAR_ZOOM : this.map.getZoom();
   }
 
@@ -289,7 +299,7 @@ export class HomePage implements OnInit {
    */
   private async initOrRefreshPage() {
     this.selectedVater = this.api.emptyApiLatLangs();
-    this.items = await this.getLatLangs();
+    this.apiItems = await this.getLatLangs();
     await this.loadMap();
     await this.createMarkers();
     if (this.markers.length) {
@@ -311,7 +321,7 @@ export class HomePage implements OnInit {
           this.mapLayer,
           10,
           2,
-          18,
+          20,
           { lat: location.coords.latitude, lng: location.coords.longitude },
           (e) => { this.onClickMap(e); });
       }
@@ -324,7 +334,8 @@ export class HomePage implements OnInit {
     for (const markr of this.markers) {
       markr.remove();
     }
-    for (const item of this.items) {
+    for (const item of this.apiItems) {
+      // item.foto = ProPhoto.CAB_64 + item.foto;
       const mark = await this.leafletUtil.crateLocationMarker(
         { lat: item.lat, lng: item.lng },
         this.leafletUtil.vaterIcon,
@@ -360,6 +371,7 @@ export class HomePage implements OnInit {
       this.newVaterMarker.embebedObject = this.locationManager.emptyIReversedGeocoded();
     }
   }
+
 
 
   //ROUTER
@@ -424,7 +436,6 @@ export class HomePage implements OnInit {
 
 
   // operaciones DB API
-
   private async getLatLangs() {
     const latLangs = await this.api.getLatLangs();
     for (const iterator of latLangs) {
@@ -447,7 +458,7 @@ export class HomePage implements OnInit {
     try {
       if (!this.subscribeBackButton || this.subscribeBackButton.closed) {
         this.subscribeBackButton = await this.platform.backButton.subscribeWithPriority(100000, () => {
-          this.subscribeFunctionBack();
+          this.subscribeBackFunction();
         });
       }
     } catch (error) {
@@ -466,8 +477,9 @@ export class HomePage implements OnInit {
     }
   }
 
-  private async subscribeFunctionBack() {
+  private async subscribeBackFunction() {
     try {
+      this.search = '';
       this.clearAllMarkers();
     } catch (error) {
       this.helper.showException(error);

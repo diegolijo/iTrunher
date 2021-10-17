@@ -21,12 +21,8 @@
     </ion-label>
     <!--     <ion-input [(ngModel)]="this.newMarker.embebedObject.locality" class="ion-text-center">
     </ion-input> -->
-    <ion-input class="ion-text-center">
-      {{this.newMarker.embebedObject.administrativeArea +
-        ' ' + this.newMarker.embebedObject.subAdministrativeArea +
-        ' ' + this.newMarker.embebedObject.locality +
-        ' ' + this.newMarker.embebedObject.thoroughfare +
-        ' ' + this.newMarker.embebedObject.subThoroughfare }}
+    <ion-input class="ion-text-center" [(ngModel)]="this.newMarker.embebedObject['direccion']">
+
     </ion-input>
   </ion-item>
 
